@@ -20,7 +20,7 @@ router.get("/", (req, res) => {
 //ROUTE FOR THE MAIN VIDEO
 router.get("/:videoId", (req, res) => {
   const data = fs.readFileSync("./data/videos.json", "utf-8");
-  const videoData = JSON.parse(data);
+  let videoData = JSON.parse(data);
   const foundVideo = videoData.find((video) => video.id === req.params.videoId);
   res.json(foundVideo);
 });
@@ -28,7 +28,7 @@ router.get("/:videoId", (req, res) => {
 //ROUTE FOR POSTING NEW VIDEO
 router.post("/", (req, res) => {
   const data = fs.readFileSync("./data/videos.json", "utf-8");
-  const videoData = JSON.parse(data);
+  let videoData = JSON.parse(data);
   const { title, description } = req.body;
   if (req.body && title && description) {
     const updatedVideo = {
@@ -71,6 +71,7 @@ router.post("/:videoId/comments", (req, res) => {
     videoData.splice(indexOfFoundVideo, 1, foundVideo);
     fs.writeFileSync("./data/videos.json", JSON.stringify(videoData));
     res.send("comments updated");
+    console.log("running");
   } else {
     res.send("Error! Make sure the comment object has the right structure");
   }
