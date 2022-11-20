@@ -8,6 +8,7 @@ const PORT = process.env.PORT || 8000;
 
 app.use(cors());
 app.use(express.static("public"));
+app.use(express.static("upload-file"));
 app.use(express.json());
 //Middleware
 //USE ROUTES
