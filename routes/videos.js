@@ -97,6 +97,7 @@ router.post("/:videoId/comments", (req, res) => {
 router.delete("/:videoId/comments/:commentId", (req, res) => {
   const data = fs.readFileSync("./data/videos.json", "utf-8");
   let videoData = JSON.parse(data);
+  console.log("running");
   const newVideoData = videoData.map((video) => {
     if (video.id === req.params.videoId) {
       const newCommentArr = video.comments.filter(
