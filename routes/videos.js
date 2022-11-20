@@ -3,6 +3,8 @@ const router = express.Router();
 const fs = require("fs");
 const { v4: uuid } = require("uuid");
 const multer = require("multer");
+
+//USE MULTER LIBRARY TO STORE THE UPLOADED IMAGE AND CREATE A NAME FOR THE IMAGE
 const storage = multer.diskStorage({
   destination: function (req, file, callback) {
     callback(null, "upload-file/upload-image");
@@ -13,7 +15,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-//ROUTE FOR VIDEOLIST
+//ROUTE FOR THE VIDEOLIST
 router
   .route("/")
   .get((req, res) => {
@@ -28,7 +30,8 @@ router
     });
     res.json(videoData);
   })
-  //ROUTE FOR POSTING NEW VIDEO
+
+  //ROUTE FOR POSTING A NEW VIDEO FROM THE UPLOAD PAGE
   .post(upload.single("image"), (req, res) => {
     const data = fs.readFileSync("./data/videos.json", "utf-8");
     let videoData = JSON.parse(data);
@@ -41,8 +44,8 @@ router
         description,
         channel: "Red Cow",
         image: imagePath.replace("upload-file", ""),
-        views: "1,000,000",
-        likes: 100000,
+        views: "1",
+        likes: "1",
         duration: "5:00",
         video: "https://project-2-api.herokuapp.com/stream",
         timestamp: Date.now(),
@@ -107,7 +110,7 @@ router.delete("/:videoId/comments/:commentId", (req, res) => {
   res.send("comment deleted");
 });
 
-//ROUTE FOR ADDING LIKE FOR VIDEOS
+//ROUTE FOR ADDING LIKES FOR VIDEOS
 router.put("/:videoId/likes", (req, res) => {
   const data = fs.readFileSync("./data/videos.json", "utf-8");
   let videoData = JSON.parse(data);
@@ -124,4 +127,5 @@ router.put("/:videoId/likes", (req, res) => {
   fs.writeFileSync("./data/videos.json", JSON.stringify(newVideoData));
   res.send("like added");
 });
+
 module.exports = router;
