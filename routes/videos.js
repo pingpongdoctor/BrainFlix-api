@@ -41,6 +41,7 @@ router
     let videoData = JSON.parse(data);
     const { title, description } = req.body;
     const imagePath = req.file.path;
+    console.log(req.file.path);
     if (req.body && title && description && imagePath) {
       const updatedVideo = {
         id: uuid(),
