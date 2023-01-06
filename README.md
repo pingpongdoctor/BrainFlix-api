@@ -15,7 +15,7 @@ This project is about building a website that provides a video streaming platfor
 
 ## Tech Stack Frontend
 
-- ReactJS and React Components - build the multi-view site on the Frontend.
+- ReactJS and React Components.
 - React Router Dom Library.
 - React Hooks.
 - SASS.
@@ -25,7 +25,7 @@ This project is about building a website that provides a video streaming platfor
 
 - NodeJS and Express - handle the whole Backend.
 - Multer library.
-- REST API - build multiple endpoints.
+- REST API.
 
 ## Installation
 
