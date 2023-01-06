@@ -1,5 +1,3 @@
-![Logo](https://res.cloudinary.com/dtdzvyf4s/image/upload/v1672964525/BrainFlix-logo_f6nooo.svg)
-
 # BrainFlix
 
 https://buildyourdiet.netlify.app/
