@@ -37,7 +37,7 @@ router
 
   //ROUTE FOR POSTING A NEW VIDEO FROM THE UPLOAD PAGE
   .post(upload.single("image"), (req, res) => {
-    const data = fs.readFileSync("./data/videos.json", "utf-8");
+    const data = fs.readFileSync("/videos.json", "utf-8");
     let videoData = JSON.parse(data);
     const { title, description } = req.body;
     const imagePath = req.file.path;
