@@ -31,7 +31,7 @@ router
       });
       res.json(videoData);
     } catch (error) {
-      res.status(500).send("Sorry! Something is happening with the server");
+      res.status(500).json({ message: { error } });
     }
   })
 
