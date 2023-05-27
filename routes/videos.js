@@ -15,15 +15,14 @@ const storage = multer.diskStorage({
   },
 });
 const upload = multer({ storage: storage });
+const file = path.join(process.cwd(), "data", "videos.json");
 
 //ROUTE FOR THE VIDEOLIST
 router
   .route("/")
   .get((req, res) => {
     try {
-      const file = path.join(process.cwd(), "data", "videos.json");
       const data = fs.readFileSync(file, "utf-8");
-
       const videoData = JSON.parse(data).map((video) => {
         return {
           id: video.id,
@@ -40,7 +39,7 @@ router
 
   //ROUTE FOR POSTING A NEW VIDEO FROM THE UPLOAD PAGE
   .post(upload.single("image"), (req, res) => {
-    const data = fs.readFileSync("./data/videos.json", "utf-8");
+    const data = fs.readFileSync(file, "utf-8");
     let videoData = JSON.parse(data);
     const { title, description } = req.body;
     const imagePath = req.file.path;
@@ -60,7 +59,7 @@ router
         comments: [],
       };
       const newVideoData = [...videoData, updatedVideo];
-      fs.writeFileSync("./data/videos.json", JSON.stringify(newVideoData));
+      fs.writeFileSync(file, JSON.stringify(newVideoData));
       res.status(201).send("video updated");
     } else {
       res
@@ -72,7 +71,7 @@ router
 //ROUTE FOR THE MAIN VIDEO
 router.get("/:videoId", (req, res) => {
   try {
-    const data = fs.readFileSync("./data/videos.json", "utf-8");
+    const data = fs.readFileSync(file, "utf-8");
     let videoData = JSON.parse(data);
     const foundVideo = videoData.find(
       (video) => video.id === req.params.videoId
@@ -85,7 +84,7 @@ router.get("/:videoId", (req, res) => {
 
 //ROUTE FOR POSTING COMMENTS
 router.post("/:videoId/comments", (req, res) => {
-  const data = fs.readFileSync("./data/videos.json", "utf-8");
+  const data = fs.readFileSync(file, "utf-8");
   let videoData = JSON.parse(data);
   const { name, comment } = req.body;
   if (req.body && name && comment) {
@@ -101,7 +100,7 @@ router.post("/:videoId/comments", (req, res) => {
         videoData[i].comments.push(newComment);
       }
     }
-    fs.writeFileSync("./data/videos.json", JSON.stringify(videoData));
+    fs.writeFileSync(file, JSON.stringify(videoData));
     res.status(201).send("comments updated");
     console.log("running");
   } else {
@@ -114,7 +113,7 @@ router.post("/:videoId/comments", (req, res) => {
 //ROUTE FOR DELETING COMMENTS
 router.delete("/:videoId/comments/:commentId", (req, res) => {
   try {
-    const data = fs.readFileSync("./data/videos.json", "utf-8");
+    const data = fs.readFileSync(file, "utf-8");
     let videoData = JSON.parse(data);
     console.log("running");
     const newVideoData = videoData.map((video) => {
@@ -126,7 +125,7 @@ router.delete("/:videoId/comments/:commentId", (req, res) => {
       }
       return video;
     });
-    fs.writeFileSync("./data/videos.json", JSON.stringify(newVideoData));
+    fs.writeFileSync(file, JSON.stringify(newVideoData));
     res.status(200).send("comment deleted");
   } catch (error) {
     res.status(500).send("Problem comes from the server");
@@ -136,7 +135,7 @@ router.delete("/:videoId/comments/:commentId", (req, res) => {
 //ROUTE FOR ADDING LIKES FOR VIDEOS
 router.put("/:videoId/likes", (req, res) => {
   try {
-    const data = fs.readFileSync("./data/videos.json", "utf-8");
+    const data = fs.readFileSync(file, "utf-8");
     let videoData = JSON.parse(data);
     const newVideoData = videoData.map((video) => {
       if (video.id === req.params.videoId) {
@@ -148,7 +147,7 @@ router.put("/:videoId/likes", (req, res) => {
       }
       return video;
     });
-    fs.writeFileSync("./data/videos.json", JSON.stringify(newVideoData));
+    fs.writeFileSync(file, JSON.stringify(newVideoData));
     res.status(200).send("like added");
   } catch (error) {
     res.status(500).send("Problem comes from the server");
