@@ -6,9 +6,14 @@ const multer = require("multer");
 const path = require("path");
 
 //USE MULTER LIBRARY TO STORE THE UPLOADED IMAGE AND CREATE A NAME FOR THE IMAGE
+const destinationFolder = path.join(
+  process.cwd(),
+  "upload-file",
+  "upload-image"
+);
 const storage = multer.diskStorage({
   destination: function (req, file, callback) {
-    callback(null, "upload-file/upload-image");
+    callback(null, destinationFolder);
   },
   filename: function (req, file, callback) {
     callback(null, Date.now() + "_" + file.originalname);
@@ -24,11 +29,19 @@ router
     try {
       const data = fs.readFileSync(file, "utf-8");
       const videoData = JSON.parse(data).map((video) => {
+        const imageName = video.image;
+
+        if (!imageName.includes("Upload-video-preview")) {
+          imageFile = `/images/${imageName}`;
+        } else {
+          imageFile = `/upload-image/${imageName}`;
+        }
+
         return {
           id: video.id,
           title: video.title,
           channel: video.channel,
-          image: video.image,
+          image: imageFile,
         };
       });
       res.json(videoData);
@@ -43,7 +56,7 @@ router
     let videoData = JSON.parse(data);
     const { title, description } = req.body;
     const imagePath = req.file.path;
-    console.log(req.file.path);
+    console.log(imagePath);
     if (req.body && title && description && imagePath) {
       const updatedVideo = {
         id: uuid(),
@@ -58,9 +71,9 @@ router
         timestamp: Date.now(),
         comments: [],
       };
-      const newVideoData = [...videoData, updatedVideo];
-      fs.writeFileSync(file, JSON.stringify(newVideoData));
-      res.status(201).send("video updated");
+      // const newVideoData = [...videoData, updatedVideo];
+      // fs.writeFileSync(file, JSON.stringify(newVideoData));
+      // res.status(201).send("video updated");
     } else {
       res
         .status(400)
@@ -76,6 +89,16 @@ router.get("/:videoId", (req, res) => {
     const foundVideo = videoData.find(
       (video) => video.id === req.params.videoId
     );
+    const imageName = foundVideo.image;
+
+    if (!imageName.includes("Upload-video-preview")) {
+      imageFile = `/images/${imageName}`;
+      foundVideo.image = imageFile;
+    } else {
+      imageFile = `/upload-image/${imageName}`;
+      foundVideo.image = imageFile;
+    }
+    console.log(foundVideo);
     res.json(foundVideo);
   } catch (error) {
     res.status(500).send("Sorry! Something is happening with the server");
