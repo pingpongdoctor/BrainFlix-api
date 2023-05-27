@@ -10,7 +10,6 @@ app.use(express.json());
 app.set("trust proxy", 1);
 app.use(express.static("public"));
 app.use(express.static("upload-file"));
-app.use(express.static("data"));
 
 //IMPORT ROUTES
 app.use("/videos", videos);

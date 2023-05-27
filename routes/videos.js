@@ -3,6 +3,7 @@ const router = express.Router();
 const fs = require("fs");
 const { v4: uuid } = require("uuid");
 const multer = require("multer");
+const path = require("path");
 
 //USE MULTER LIBRARY TO STORE THE UPLOADED IMAGE AND CREATE A NAME FOR THE IMAGE
 const storage = multer.diskStorage({
@@ -20,7 +21,9 @@ router
   .route("/")
   .get((req, res) => {
     try {
-      const data = fs.readFileSync("./data/videos.json", "utf-8");
+      const file = path.join(process.cwd(), "data", "videos.json");
+      const data = fs.readFileSync(file, "utf-8");
+
       const videoData = JSON.parse(data).map((video) => {
         return {
           id: video.id,
@@ -37,7 +40,7 @@ router
 
   //ROUTE FOR POSTING A NEW VIDEO FROM THE UPLOAD PAGE
   .post(upload.single("image"), (req, res) => {
-    const data = fs.readFileSync("/videos.json", "utf-8");
+    const data = fs.readFileSync("./data/videos.json", "utf-8");
     let videoData = JSON.parse(data);
     const { title, description } = req.body;
     const imagePath = req.file.path;
