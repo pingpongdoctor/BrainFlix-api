@@ -41,7 +41,7 @@ router
           id: video.id,
           title: video.title,
           channel: video.channel,
-          image: imageFile,
+          image: path.dirname(imageFile),
         };
       });
       res.json(videoData);
