@@ -5,6 +5,7 @@ const cors = require("cors");
 const videos = require("./routes/videos.js");
 const PORT = process.env.PORT || 8000;
 
+app.set("trust proxy", 1);
 app.use(cors());
 // Enable CORS for specific origins
 app.use((req, res, next) => {
@@ -17,7 +18,6 @@ app.use((req, res, next) => {
   next();
 });
 app.use(express.json());
-app.set("trust proxy", 1);
 
 //IMPORT ROUTES
 app.use("/videos", videos);
