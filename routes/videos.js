@@ -56,7 +56,6 @@ router
     const data = fs.readFileSync(file, "utf-8");
     let videoData = JSON.parse(data);
     const imageFileName = req.file.filename;
-    console.log(imageFileName);
     const imageFilePath = path.join(
       process.cwd(),
       "upload-file",
@@ -140,7 +139,6 @@ router.delete("/:videoId/comments/:commentId", (req, res) => {
   try {
     const data = fs.readFileSync(file, "utf-8");
     let videoData = JSON.parse(data);
-    console.log("running");
     const newVideoData = videoData.map((video) => {
       if (video.id === req.params.videoId) {
         const newCommentArr = video.comments.filter(

@@ -8,8 +8,6 @@ const PORT = process.env.PORT || 8000;
 app.use(cors());
 app.use(express.json());
 app.set("trust proxy", 1);
-app.use(express.static("public"));
-app.use(express.static("upload-file"));
 
 //IMPORT ROUTES
 app.use("/videos", videos);
