@@ -109,28 +109,32 @@ router.get("/:videoId", (req, res) => {
 
 //ROUTE FOR POSTING COMMENTS
 router.post("/:videoId/comments", (req, res) => {
-  const data = fs.readFileSync(file, "utf-8");
-  let videoData = JSON.parse(data);
-  const { name, comment } = req.body;
-  if (name && comment) {
-    const newComment = {
-      id: uuid(),
-      name,
-      comment,
-      likes: 0,
-      timestamp: Date.now(),
-    };
-    for (let i = 0; i < videoData.length; i++) {
-      if (videoData[i].id === req.params.videoId) {
-        videoData[i].comments.push(newComment);
+  try {
+    const data = fs.readFileSync(file, "utf-8");
+    let videoData = JSON.parse(data);
+    const { name, comment } = req.body;
+    if (name && comment) {
+      const newComment = {
+        id: uuid(),
+        name,
+        comment,
+        likes: 0,
+        timestamp: Date.now(),
+      };
+      for (let i = 0; i < videoData.length; i++) {
+        if (videoData[i].id === req.params.videoId) {
+          videoData[i].comments.push(newComment);
+        }
       }
+      fs.writeFileSync(file, JSON.stringify(videoData));
+      res.status(201).send("comments updated");
+    } else {
+      res
+        .status(400)
+        .json("Error! Make sure the comment object has the right structure");
     }
-    fs.writeFileSync(file, JSON.stringify(videoData));
-    res.status(201).send("comments updated");
-  } else {
-    res
-      .status(400)
-      .json("Error! Make sure the comment object has the right structure");
+  } catch (error) {
+    res.status(500).json({ message: { error } });
   }
 });
 
