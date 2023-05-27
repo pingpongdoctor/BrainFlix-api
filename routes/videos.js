@@ -112,7 +112,7 @@ router.post("/:videoId/comments", (req, res) => {
   const data = fs.readFileSync(file, "utf-8");
   let videoData = JSON.parse(data);
   const { name, comment } = req.body;
-  if (req.body && name && comment) {
+  if (name && comment) {
     const newComment = {
       id: uuid(),
       name,
@@ -130,7 +130,7 @@ router.post("/:videoId/comments", (req, res) => {
   } else {
     res
       .status(400)
-      .send("Error! Make sure the comment object has the right structure");
+      .json("Error! Make sure the comment object has the right structure");
   }
 });
 
