@@ -4,6 +4,14 @@ const fs = require("fs");
 const { v4: uuid } = require("uuid");
 const multer = require("multer");
 const path = require("path");
+const cloudinary = require("cloudinary").v2;
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDNARY_NAME,
+  api_key: process.env.CLOUDNARY_API_KEY,
+  api_secret: process.env.CLOUDNARY_API_SECRET,
+  secure: true,
+});
 
 //USE MULTER LIBRARY TO STORE THE UPLOADED IMAGE AND CREATE A NAME FOR THE IMAGE
 const destinationFolder = path.join(
@@ -28,20 +36,13 @@ router
   .get((req, res) => {
     try {
       const data = fs.readFileSync(file, "utf-8");
-      const videoData = JSON.parse(data).map((video) => {
-        const imageName = video.image;
 
-        if (!imageName.includes("Upload-video-preview")) {
-          imageFile = `/images/${imageName}`;
-        } else {
-          imageFile = `/upload-image/${imageName}`;
-        }
-        console.log(path.dirname(imageFile));
+      const videoData = JSON.parse(data).map((video) => {
         return {
           id: video.id,
           title: video.title,
           channel: video.channel,
-          image: `${path.dirname(imageFile)}/${imageName}`,
+          image: video.image,
         };
       });
       res.json(videoData);
@@ -51,34 +52,45 @@ router
   })
 
   //ROUTE FOR POSTING A NEW VIDEO FROM THE UPLOAD PAGE
-  .post(upload.single("image"), (req, res) => {
+  .post(upload.single("image"), async (req, res) => {
     const data = fs.readFileSync(file, "utf-8");
     let videoData = JSON.parse(data);
-    const { title, description } = req.body;
-    const imagePath = req.file.path;
+    const imageFileName = req.file.filename;
+    console.log(imageFileName);
+    const imageFilePath = path.join(
+      process.cwd(),
+      "upload-file",
+      "upload-image",
+      imageFileName
+    );
 
-    if (req.body && title && description && imagePath) {
-      const updatedVideo = {
-        id: uuid(),
-        title,
-        description,
-        channel: "Red Cow",
-        image: imagePath.replace("upload-file", ""),
-        views: "1",
-        likes: "1",
-        duration: "5:00",
-        video: "https://project-2-api.herokuapp.com/stream",
-        timestamp: Date.now(),
-        comments: [],
-      };
-      // const newVideoData = [...videoData, updatedVideo];
-      // fs.writeFileSync(file, JSON.stringify(newVideoData));
-      // res.status(201).send("video updated");
-    } else {
-      res
-        .status(400)
-        .send("Make sure you update the right video object structure");
-    }
+    cloudinary.uploader.upload(imageFilePath, (error, result) => {
+      if (result) {
+        const { title, description } = req.body;
+        if (title && description) {
+          const updatedVideo = {
+            id: uuid(),
+            title,
+            description,
+            channel: "Red Cow",
+            image: result.url,
+            views: "1",
+            likes: "1",
+            duration: "5:00",
+            video: "https://project-2-api.herokuapp.com/stream",
+            timestamp: Date.now(),
+            comments: [],
+          };
+          const newVideoData = [...videoData, updatedVideo];
+          fs.writeFileSync(file, JSON.stringify(newVideoData));
+          res.status(201).send("video updated");
+        } else {
+          res
+            .status(400)
+            .send("Make sure you update the right video object structure");
+        }
+      }
+    });
   });
 
 //ROUTE FOR THE MAIN VIDEO
@@ -89,15 +101,7 @@ router.get("/:videoId", (req, res) => {
     const foundVideo = videoData.find(
       (video) => video.id === req.params.videoId
     );
-    const imageName = foundVideo.image;
 
-    if (!imageName.includes("Upload-video-preview")) {
-      imageFile = `/images/${imageName}`;
-      foundVideo.image = imageFile;
-    } else {
-      imageFile = `/upload-image/${imageName}`;
-      foundVideo.image = imageFile;
-    }
     res.json(foundVideo);
   } catch (error) {
     res.status(500).send("Sorry! Something is happening with the server");
