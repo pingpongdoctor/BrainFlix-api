@@ -36,12 +36,12 @@ router
         } else {
           imageFile = `/upload-image/${imageName}`;
         }
-
+        console.log(path.dirname(imageFile));
         return {
           id: video.id,
           title: video.title,
           channel: video.channel,
-          image: path.dirname(imageFile),
+          image: `${path.dirname(imageFile)}/${imageName}`,
         };
       });
       res.json(videoData);
@@ -56,7 +56,7 @@ router
     let videoData = JSON.parse(data);
     const { title, description } = req.body;
     const imagePath = req.file.path;
-    console.log(imagePath);
+
     if (req.body && title && description && imagePath) {
       const updatedVideo = {
         id: uuid(),
@@ -98,7 +98,6 @@ router.get("/:videoId", (req, res) => {
       imageFile = `/upload-image/${imageName}`;
       foundVideo.image = imageFile;
     }
-    console.log(foundVideo);
     res.json(foundVideo);
   } catch (error) {
     res.status(500).send("Sorry! Something is happening with the server");
@@ -125,7 +124,6 @@ router.post("/:videoId/comments", (req, res) => {
     }
     fs.writeFileSync(file, JSON.stringify(videoData));
     res.status(201).send("comments updated");
-    console.log("running");
   } else {
     res
       .status(400)
