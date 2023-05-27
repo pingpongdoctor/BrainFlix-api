@@ -5,7 +5,11 @@ const cors = require("cors");
 const videos = require("./routes/videos.js");
 const PORT = process.env.PORT || 8000;
 
-app.use(cors());
+app.use(
+  cors({
+    origin: process.CLIENT_URL,
+  })
+);
 app.use(express.json());
 app.set("trust proxy", 1);
 
